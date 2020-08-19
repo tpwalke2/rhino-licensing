@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using System.ServiceModel;
 using System.Threading;
 using System.Xml;
 using log4net;
+using Rhino.Licensing.Contracts;
 using Rhino.Licensing.Discovery;
 
 namespace Rhino.Licensing
@@ -15,7 +15,7 @@ namespace Rhino.Licensing
     /// <summary>
     /// Base license validator.
     /// </summary>
-    public abstract class AbstractLicenseValidator
+    public abstract class AbstractLicenseValidator: ILicenseValidator
     {
         /// <summary>
         /// License validator logger
@@ -41,8 +41,6 @@ namespace Rhino.Licensing
             "nist1.sjc.certifiedtime.com"
         };
 
-        private readonly string licenseServerUrl;
-        private readonly Guid clientId;
         private readonly string publicKey;
         private readonly Timer nextLeaseTimer;
         private bool disableFutureChecks;
@@ -93,9 +91,9 @@ namespace Rhino.Licensing
         public MultipleLicenseUsage MultipleLicenseUsageBehavior { get; set; }
 
         /// <summary>
-        /// Gets or Sets the endpoint address of the subscription service
+        /// Gets or sets the provider for subscription leases
         /// </summary>
-        public string SubscriptionEndpoint
+        public ISubscriptionLeaseProvider SubscriptionLeaseProvider
         {
             get; set;
         }
@@ -128,6 +126,14 @@ namespace Rhino.Licensing
         /// Gets or Sets Floating license support
         /// </summary>
         public bool DisableFloatingLicenses
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets or Sets a provider for floating licenses
+        /// </summary>
+        public IFloatingLicenseProvider FloatingLicenseProvider
         {
             get; set;
         }
@@ -174,17 +180,6 @@ namespace Rhino.Licensing
                 discoveryHost.ClientDiscovered += DiscoveryHostOnClientDiscovered;
                 discoveryHost.Start();
             }
-        }
-
-        /// <summary>
-        /// Creates a license validator using the client information
-        /// and a service endpoint address to validate the license.
-        /// </summary>
-        protected AbstractLicenseValidator(string publicKey, string licenseServerUrl, Guid clientId)
-            : this(publicKey)
-        {
-            this.licenseServerUrl = licenseServerUrl;
-            this.clientId = clientId;
         }
 
         private void LeaseLicenseAgain(object state)
@@ -315,12 +310,19 @@ namespace Rhino.Licensing
             if (currentlyValidatingSubscriptionLicense)
                 return DateTime.UtcNow < ExpirationDate;
 
-            if (SubscriptionEndpoint == null)
-                throw new InvalidOperationException("Subscription endpoints are not supported for this license validator");
-
             try
             {
-                TryGettingNewLeaseSubscription();
+                if (SubscriptionLeaseProvider == null)
+                {
+                    Log.Warn("Lease subscription provider has not been configured.");
+                    return false;
+                }
+
+                var newLicense = SubscriptionLeaseProvider.GetLeaseSubscription(License);
+                if (IsValidXml(newLicense))
+                {
+                    License = newLicense;
+                }
             }
             catch (Exception e)
             {
@@ -342,38 +344,13 @@ namespace Rhino.Licensing
                 currentlyValidatingSubscriptionLicense = false;
             }
         }
-
-        private void TryGettingNewLeaseSubscription()
-        {
-            var service = ChannelFactory<ISubscriptionLicensingService>.CreateChannel(new BasicHttpBinding(), new EndpointAddress(SubscriptionEndpoint));
-            try
-            {
-                var newLicense = service.LeaseLicense(License);
-                TryOverwritingWithNewLicense(newLicense);
-            }
-            finally
-            {
-                var communicationObject = service as ICommunicationObject;
-                if (communicationObject != null)
-                {
-                    try
-                    {
-                        communicationObject.Close(TimeSpan.FromMilliseconds(200));
-                    }
-                    catch
-                    {
-                        communicationObject.Abort();
-                    }
-                }
-            }
-        }
-
+        
         /// <summary>
-        /// Loads the license file.
+        /// Determines whether the specified license contains valid XML or not. 
         /// </summary>
         /// <param name="newLicense"></param>
         /// <returns></returns>
-        protected bool TryOverwritingWithNewLicense(string newLicense)
+        protected bool IsValidXml(string newLicense)
         {
             if (string.IsNullOrEmpty(newLicense))
                 return false;
@@ -387,7 +364,6 @@ namespace Rhino.Licensing
                 Log.Error("New license is not valid XML\r\n" + newLicense, e);
                 return false;
             }
-            License = newLicense;
             return true;
         }
 
@@ -484,53 +460,35 @@ namespace Rhino.Licensing
                 Log.Warn("Floating licenses have been disabled");
                 return false;
             }
-            if (licenseServerUrl == null)
+
+            if (FloatingLicenseProvider == null)
             {
-                Log.Warn("Could not find license server url");
-                throw new InvalidOperationException("Floating license encountered, but licenseServerUrl was not set");
+                Log.Warn("Floating license provider has not been configured.");
+                return false;
+            }
+            
+            var leasedLicense = FloatingLicenseProvider.GetFloatingLicense();
+
+            var doc = new XmlDocument();
+            doc.LoadXml(leasedLicense);
+
+            if (TryGetValidDocument(publicKeyOfFloatingLicense, doc) == false)
+            {
+                Log.WarnFormat("Could not get valid license from floating license server");
+                throw new FloatingLicenseNotAvailableException();
             }
 
-            var success = false;
-            var licensingService = ChannelFactory<ILicensingService>.CreateChannel(new WSHttpBinding(), new EndpointAddress(licenseServerUrl));
-            try
+            var validLicense = ValidateXmlDocumentLicense(doc);
+            if (validLicense)
             {
-                var leasedLicense = licensingService.LeaseLicense(
-                    Environment.MachineName,
-                    Environment.UserName,
-                    clientId);
-                ((ICommunicationObject)licensingService).Close();
-                success = true;
-                if (leasedLicense == null)
-                {
-                    Log.WarnFormat("Null response from license server: {0}", licenseServerUrl);
-                    throw new FloatingLicenseNotAvailableException();
-                }
-
-                var doc = new XmlDocument();
-                doc.LoadXml(leasedLicense);
-
-                if (TryGetValidDocument(publicKeyOfFloatingLicense, doc) == false)
-                {
-                    Log.WarnFormat("Could not get valid license from floating license server {0}", licenseServerUrl);
-                    throw new FloatingLicenseNotAvailableException();
-                }
-
-                var validLicense = ValidateXmlDocumentLicense(doc);
-                if (validLicense)
-                {
-                    //setup next lease
-                    var time = (ExpirationDate.AddMinutes(-5) - DateTime.UtcNow);
-                    Log.DebugFormat("Will lease license again at {0}", time);
-                    if (disableFutureChecks == false)
-                        nextLeaseTimer.Change(time, time);
-                }
-                return validLicense;
+                //setup next lease
+                var time = (ExpirationDate.AddMinutes(-5) - DateTime.UtcNow);
+                Log.DebugFormat("Will lease license again at {0}", time);
+                if (disableFutureChecks == false)
+                    nextLeaseTimer.Change(time, time);
             }
-            finally
-            {
-                if (success == false)
-                    ((ICommunicationObject)licensingService).Abort();
-            }
+
+            return validLicense;
         }
 
         internal bool ValidateXmlDocumentLicense(XmlDocument doc)

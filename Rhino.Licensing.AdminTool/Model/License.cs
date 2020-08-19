@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Caliburn.PresentationFramework;
+using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing.AdminTool.Model
 {

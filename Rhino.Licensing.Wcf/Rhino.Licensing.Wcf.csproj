@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Rhino.Licensing.Contracts\Rhino.Licensing.Contracts.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="log4net" Version="2.0.8" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="System.ServiceModel" />
+    </ItemGroup>
+</Project>

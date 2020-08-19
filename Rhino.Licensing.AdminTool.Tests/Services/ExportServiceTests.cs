@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Rhino.Licensing.AdminTool.Model;
 using Rhino.Licensing.AdminTool.Services;
+using Rhino.Licensing.Contracts;
 using Xunit;
 
 namespace Rhino.Licensing.AdminTool.Tests.Services

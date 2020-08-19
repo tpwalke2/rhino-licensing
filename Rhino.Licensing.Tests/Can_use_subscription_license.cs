@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.ServiceModel;
+using Rhino.Licensing.Contracts;
+using Rhino.Licensing.Wcf;
 using Xunit;
 
 namespace Rhino.Licensing.Tests
@@ -56,7 +58,7 @@ namespace Rhino.Licensing.Tests
 
             Assert.DoesNotThrow(() => new LicenseValidator(public_only, path)
                                         {
-                                            SubscriptionEndpoint = "http://localhost/"+Guid.NewGuid()
+                                            SubscriptionLeaseProvider = new SubscriptionLeaseProvider("http://localhost/"+Guid.NewGuid())
                                         }.AssertValidLicense());
 
         }
@@ -67,7 +69,8 @@ namespace Rhino.Licensing.Tests
             var generator = new LicenseGenerator(public_and_private);
             var license = generator.Generate("ayende", new Guid("FFD0C62C-B953-403e-8457-E90F1085170D"),
                                              DateTime.UtcNow.AddDays(-1),
-                                             new Dictionary<string, string> { { "version", "2.0" } }, LicenseType.Subscription);
+                                             new Dictionary<string, string> {{"version", "2.0"}},
+                                             LicenseType.Subscription);
 
 
             var path = Path.GetTempFileName();
@@ -76,7 +79,7 @@ namespace Rhino.Licensing.Tests
 
             Assert.Throws<LicenseExpiredException>(() => new LicenseValidator(public_only, path)
             {
-                SubscriptionEndpoint = "http://localhost/" + Guid.NewGuid()
+                SubscriptionLeaseProvider = new SubscriptionLeaseProvider("http://localhost/" + Guid.NewGuid())
             }.AssertValidLicense());
         }
 
@@ -100,7 +103,7 @@ namespace Rhino.Licensing.Tests
 
             Assert.DoesNotThrow(() => new LicenseValidator(public_only, path)
             {
-                SubscriptionEndpoint = address
+                SubscriptionLeaseProvider = new SubscriptionLeaseProvider(address)
             }.AssertValidLicense());
 
 
@@ -127,7 +130,7 @@ namespace Rhino.Licensing.Tests
 
             Assert.Throws<LicenseExpiredException>(() => new LicenseValidator(public_only, path)
             {
-                SubscriptionEndpoint = address
+                SubscriptionLeaseProvider = new SubscriptionLeaseProvider(address)
             }.AssertValidLicense());
 
 

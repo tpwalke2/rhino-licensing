@@ -1,3 +1,6 @@
+using Rhino.Licensing.Contracts;
+using Rhino.Licensing.Wcf;
+
 namespace Rhino.Licensing.Tests
 {
     using System;
@@ -27,8 +30,9 @@ namespace Rhino.Licensing.Tests
 
             GenerateLicenseFileInLicensesDirectory();
 
-            LicensingService.SoftwarePublicKey = public_only;
+            LicensingService.SoftwarePublicKey       = public_only;
             LicensingService.LicenseServerPrivateKey = floating_private;
+            LicensingService.LicenseValidatorFactory = new LicenseValidatorFactory();
 
             var host = new ServiceHost(typeof(LicensingService));
             const string address = "http://localhost:19292/license";
@@ -37,8 +41,10 @@ namespace Rhino.Licensing.Tests
             host.Open();
             try
             {
-
-                var validator = new LicenseValidator(public_only, fileName, address, Guid.NewGuid());
+                var validator = new LicenseValidator(public_only, fileName)
+                {
+                    FloatingLicenseProvider = new FloatingLicenseProvider(address, Guid.NewGuid())
+                };
                 validator.AssertValidLicense();
             }
             finally
@@ -56,6 +62,7 @@ namespace Rhino.Licensing.Tests
 
             LicensingService.SoftwarePublicKey = public_only;
             LicensingService.LicenseServerPrivateKey = floating_private;
+            LicensingService.LicenseValidatorFactory = new LicenseValidatorFactory();
 
             var host = new ServiceHost(typeof(LicensingService));
             var address = "http://localhost:19292/license";
@@ -65,10 +72,16 @@ namespace Rhino.Licensing.Tests
 
             try
             {
-                var validator = new LicenseValidator(public_only, fileName, address, Guid.NewGuid());
+                var validator = new LicenseValidator(public_only, fileName)
+                {
+                    FloatingLicenseProvider = new FloatingLicenseProvider(address, Guid.NewGuid())
+                };
                 validator.AssertValidLicense();
 
-                var validator2 = new LicenseValidator(public_only, fileName, address, Guid.NewGuid());
+                var validator2 = new LicenseValidator(public_only, fileName)
+                {
+                    FloatingLicenseProvider = new FloatingLicenseProvider(address, Guid.NewGuid())
+                };
                 Assert.Throws<FloatingLicenseNotAvailableException>(() => validator2.AssertValidLicense());
             }
             finally

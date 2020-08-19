@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using Rhino.Licensing.Contracts;
 using Xunit;
 
 namespace Rhino.Licensing.Tests

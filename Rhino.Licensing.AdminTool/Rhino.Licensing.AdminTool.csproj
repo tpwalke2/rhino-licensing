@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rhino.Licensing.AdminTool</RootNamespace>
     <AssemblyName>Rhino.Licensing.AdminTool</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -92,6 +92,10 @@
     </Reference>
     <Reference Include="J832.Wpf.BagOTricksLib">
       <HintPath>..\SharedLibs\J832.Wpf.BagOTricksLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\SharedLibs\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -274,6 +278,10 @@
     <Resource Include="Images\Paste.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rhino.Licensing.Contracts\Rhino.Licensing.Contracts.csproj">
+      <Project>{31c44753-503b-4cdd-b4bd-b7d5a1b1bec5}</Project>
+      <Name>Rhino.Licensing.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rhino.Licensing\Rhino.Licensing.csproj">
       <Project>{05EFD7EB-F0FB-4B65-8E4A-C8FF8DDC6A78}</Project>
       <Name>Rhino.Licensing</Name>

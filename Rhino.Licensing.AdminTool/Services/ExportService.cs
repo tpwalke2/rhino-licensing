@@ -2,6 +2,7 @@
 using Rhino.Licensing.AdminTool.Model;
 using System;
 using System.Linq;
+using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing.AdminTool.Services
 {

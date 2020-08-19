@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing
 {

@@ -7,6 +7,7 @@
              xmlns:cnv="clr-namespace:Rhino.Licensing.AdminTool.ValueConverters" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              xmlns:lic="clr-namespace:Rhino.Licensing;assembly=Rhino.Licensing"
+             xmlns:contracts="clr-namespace:Rhino.Licensing.Contracts;assembly=Rhino.Licensing.Contracts"
              Background="{DynamicResource TabSelectionBrush}"
              mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="400">
     <UserControl.Resources>
@@ -14,7 +15,7 @@
 
         <ObjectDataProvider x:Key="licenseTypes" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="lic:LicenseType" />
+                <x:Type TypeName="contracts:LicenseType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 

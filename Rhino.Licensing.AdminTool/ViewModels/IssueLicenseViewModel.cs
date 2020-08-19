@@ -3,6 +3,7 @@ using Caliburn.PresentationFramework.Filters;
 using Caliburn.PresentationFramework.Screens;
 using Rhino.Licensing.AdminTool.Model;
 using Rhino.Licensing.AdminTool.Properties;
+using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing.AdminTool.ViewModels
 {

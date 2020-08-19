@@ -9,6 +9,7 @@ using Rhino.Licensing.AdminTool.ViewModels;
 using Rhino.Mocks;
 using Xunit;
 using Caliburn.Testability.Extensions;
+using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing.AdminTool.Tests.ViewModels
 {
