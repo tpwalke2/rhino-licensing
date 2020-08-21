@@ -1,7 +1,7 @@
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
 using Xunit;
 using System.Linq;
+using NSubstitute;
 using Xunit.Extensions;
 using DialogForm = System.Windows.Forms.FileDialog;
 using OpenFileDialog = Rhino.Licensing.AdminTool.Dialogs.OpenFileDialog;
@@ -14,7 +14,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Dialogs
 
         public FileDialogTests()
         {
-            _dialogForm = MockRepository.GenerateMock<DialogForm>();
+            _dialogForm = Substitute.For<DialogForm>();
         }
 
         [Fact]
@@ -23,9 +23,9 @@ namespace Rhino.Licensing.AdminTool.Tests.Dialogs
             var model = new OpenFileDialogViewModel();
             var dialog = new TestOpenFileDialog(_dialogForm) { ViewModel = model };
 
-            _dialogForm.Expect(x => x.ShowDialog()).Return(System.Windows.Forms.DialogResult.OK);
-            _dialogForm.Expect(x => x.FileName).Return("License.lic");
-            _dialogForm.Expect(x => x.FileNames).Return(new[] {"License.lic", "License2.lic"});
+            _dialogForm.ShowDialog().Returns(System.Windows.Forms.DialogResult.OK);
+            _dialogForm.FileName.Returns("License.lic");
+            _dialogForm.FileNames.Returns(new[] {"License.lic", "License2.lic"});
 
             dialog.ShowDialog();
 
@@ -44,7 +44,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Dialogs
             dialog.ShowDialog();
             dialog.Dispose();
 
-            _dialogForm.AssertWasCalled(x => x.Dispose(), x => x.Repeat.Once());
+            _dialogForm.Received(1).Dispose();
         }
 
         [Theory]
@@ -56,7 +56,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Dialogs
             var model = new OpenFileDialogViewModel();
             var dialog = new TestOpenFileDialog(_dialogForm) { ViewModel = model };
 
-            _dialogForm.Expect(x => x.ShowDialog()).Return(dialogResult);
+            _dialogForm.ShowDialog().Returns(dialogResult);
 
             dialog.ShowDialog();
             
@@ -72,10 +72,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Dialogs
                 _form = form;
             }
 
-            protected override DialogForm Dialog
-            {
-                get { return _form; }
-            }
+            protected override DialogForm Dialog => _form;
         }
     }
 }

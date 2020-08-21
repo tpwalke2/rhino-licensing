@@ -12,7 +12,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public string Key
         {
-            get { return _key; }
+            get => _key;
             set
             {
                 _key = value;
@@ -23,7 +23,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public string Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 _value = value;

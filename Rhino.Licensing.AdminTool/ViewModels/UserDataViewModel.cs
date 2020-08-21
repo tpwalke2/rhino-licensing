@@ -13,7 +13,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual License CurrentLicense
         {
-            get { return _currentLicense; }
+            get => _currentLicense;
             set
             {
                 _currentLicense = value;
@@ -23,7 +23,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual UserData SelectedKeyValue
         {
-            get { return _selectedKeyValue; }
+            get => _selectedKeyValue;
             set
             {
                 _selectedKeyValue = value;
@@ -33,7 +33,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string CurrentKey
         {
-            get { return _currentKey; }
+            get => _currentKey;
             set
             {
                 _currentKey = value;
@@ -43,7 +43,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string CurrentValue
         {
-            get { return _currentValue; }
+            get => _currentValue;
             set
             {
                 _currentValue = value;
@@ -51,20 +51,12 @@ namespace Rhino.Licensing.AdminTool.ViewModels
             }
         }
 
-        public virtual bool CanRemoveSelected
-        {
-            get { return CurrentLicense != null && SelectedKeyValue != null; }
-        }
+        public virtual bool CanRemoveSelected => CurrentLicense != null && SelectedKeyValue != null;
 
-        public virtual bool CanAddKey
-        {
-            get 
-            { 
-                return CurrentLicense != null && 
-                       !string.IsNullOrWhiteSpace(CurrentKey) &&
-                       !string.IsNullOrWhiteSpace(CurrentValue);
-            }
-        }
+        public virtual bool CanAddKey =>
+            CurrentLicense != null && 
+            !string.IsNullOrWhiteSpace(CurrentKey) &&
+            !string.IsNullOrWhiteSpace(CurrentValue);
 
         [AutoCheckAvailability]
         public virtual void RemoveSelected()

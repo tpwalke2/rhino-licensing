@@ -28,7 +28,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual License CurrentLicense
         {
-            get { return _currentLicense; }
+            get => _currentLicense;
             private set
             {
                 _currentLicense = value;
@@ -55,14 +55,9 @@ namespace Rhino.Licensing.AdminTool.ViewModels
             get; private set;
         }
 
-        public virtual bool CanAccept
-        {
-            get
-            {
-                return CurrentLicense != null &&
-                       !string.IsNullOrWhiteSpace(CurrentLicense.OwnerName);
-            }
-        }
+        public virtual bool CanAccept =>
+            CurrentLicense != null &&
+            !string.IsNullOrWhiteSpace(CurrentLicense.OwnerName);
 
         [AutoCheckAvailability]
         public virtual void Accept()

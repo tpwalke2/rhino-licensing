@@ -1,10 +1,10 @@
 using Caliburn.PresentationFramework.ApplicationModel;
 using Caliburn.PresentationFramework.Screens;
+using NSubstitute;
 using Rhino.Licensing.AdminTool.Factories;
 using Rhino.Licensing.AdminTool.Services;
 using Rhino.Licensing.AdminTool.Tests.Base;
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
 using Xunit;
 
 namespace Rhino.Licensing.AdminTool.Tests.ViewModels
@@ -21,13 +21,13 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
 
         public ShellViewModelTests()
         {
-            _viewModelFactory = MockRepository.GenerateMock<IViewModelFactory>();
-            _windowManager = MockRepository.GenerateMock<IWindowManager>();
-            _projectService = MockRepository.GenerateMock<IProjectService>();
-            _dialogService = MockRepository.GenerateMock<IDialogService>();
-            _statusService = MockRepository.GenerateMock<IStatusService>();
-            _exportService = MockRepository.GenerateMock<IExportService>();
-            _projectViewModel = MockRepository.GenerateMock<ProjectViewModel>(_projectService, _dialogService, _statusService, _exportService, _viewModelFactory, _windowManager);
+            _viewModelFactory = Substitute.For<IViewModelFactory>();
+            _windowManager = Substitute.For<IWindowManager>();
+            _projectService = Substitute.For<IProjectService>();
+            _dialogService = Substitute.For<IDialogService>();
+            _statusService = Substitute.For<IStatusService>();
+            _exportService = Substitute.For<IExportService>();
+            _projectViewModel = Substitute.For<ProjectViewModel>(_projectService, _dialogService, _statusService, _exportService, _viewModelFactory, _windowManager);
         }
 
         [Fact]
@@ -36,11 +36,11 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
             var shell = CreateShellViewModel();
             var aboutVm = new AboutViewModel();
 
-            _viewModelFactory.Expect(x => x.Create<AboutViewModel>()).Return(aboutVm);
+            _viewModelFactory.Create<AboutViewModel>().Returns(aboutVm);
 
             shell.ShowAboutDialog();
 
-            _windowManager.AssertWasCalled(x => x.ShowDialog(Arg.Is(aboutVm), Arg.Is<object>(null)), c => c.Repeat.Once());
+            _windowManager.Received().ShowDialog(Arg.Is(aboutVm), Arg.Is<object>(null));
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
             var shell = CreateShellViewModel();
             var vm = CreateProjectViewModel();
 
-            _viewModelFactory.Expect(x => x.Create<ProjectViewModel>()).Return(vm);
+            _viewModelFactory.Create<ProjectViewModel>().Returns(vm);
 
             shell.CreateNewProject();
 
@@ -62,8 +62,8 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         {
             var shell = CreateShellViewModel();
 
-            _projectViewModel.Expect(x => x.Open()).Return(true);
-            _viewModelFactory.Expect(x => x.Create<ProjectViewModel>()).Return(_projectViewModel);
+            _projectViewModel.Open().Returns(true);
+            _viewModelFactory.Create<ProjectViewModel>().Returns(_projectViewModel);
 
             shell.OpenProject();
 
@@ -76,8 +76,8 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         {
             var shell = CreateShellViewModel();
 
-            _projectViewModel.Expect(x => x.Open()).Return(false);
-            _viewModelFactory.Expect(x => x.Create<ProjectViewModel>()).Return(_projectViewModel);
+            _projectViewModel.Open().Returns(false);
+            _viewModelFactory.Create<ProjectViewModel>().Returns(_projectViewModel);
 
             shell.OpenProject();
 
@@ -89,11 +89,11 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         {
             var shell = CreateShellViewModel();
 
-            _viewModelFactory.Expect(x => x.Create<ProjectViewModel>()).Return(_projectViewModel);
+            _viewModelFactory.Create<ProjectViewModel>().Returns(_projectViewModel);
 
             shell.OpenProject();
 
-            _projectViewModel.AssertWasCalled(x => x.Open(), options => options.Repeat.Once());
+            _projectViewModel.Received().Open();
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
 
             shell.ActiveItem = new Screen(); //Change to new view
 
-            _viewModelFactory.AssertWasCalled(x => x.Release(Arg.Is(vm)));
+            _viewModelFactory.Received().Release(Arg.Is(vm));
         }
 
         private ProjectViewModel CreateProjectViewModel()

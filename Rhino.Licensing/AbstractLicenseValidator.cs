@@ -47,7 +47,7 @@ namespace Rhino.Licensing
         private bool currentlyValidatingSubscriptionLicense;
         private readonly DiscoveryHost discoveryHost;
         private DiscoveryClient discoveryClient;
-        private Guid senderId;
+        private readonly Guid senderId;
 
         /// <summary>
         /// Fired when license data is invalidated

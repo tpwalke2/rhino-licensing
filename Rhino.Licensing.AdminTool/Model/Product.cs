@@ -28,7 +28,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual Guid Id
         {
-            get { return _id; }
+            get => _id;
             set
             {
                 _id = value;
@@ -39,7 +39,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 _name = value;
@@ -50,7 +50,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual string PrivateKey
         {
-            get { return _privateKey; }
+            get => _privateKey;
             set
             {
                 _privateKey = value;
@@ -61,7 +61,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual string PublicKey
         {
-            get { return _publicKey; }
+            get => _publicKey;
             set
             {
                 _publicKey = value;
@@ -72,7 +72,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual ObservableCollection<License> IssuedLicenses
         {
-            get { return _issuedLicenses; }
+            get => _issuedLicenses;
             private set
             {
                 _issuedLicenses = value;

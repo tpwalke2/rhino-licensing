@@ -1,9 +1,8 @@
-using System;
 using Caliburn.PresentationFramework.ApplicationModel;
+using NSubstitute;
 using Rhino.Licensing.AdminTool.Factories;
 using Rhino.Licensing.AdminTool.Services;
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
 using Xunit;
 
 namespace Rhino.Licensing.AdminTool.Tests.Services
@@ -14,9 +13,9 @@ namespace Rhino.Licensing.AdminTool.Tests.Services
 
         public StatusServiceTests()
         {
-            var windowManager = MockRepository.GenerateMock<IWindowManager>();
-            var viewModelFactory = MockRepository.GenerateMock<IViewModelFactory>();
-            var projectService = MockRepository.GenerateMock<IProjectService>();
+            var windowManager    = Substitute.For<IWindowManager>();
+            var viewModelFactory = Substitute.For<IViewModelFactory>();
+            var projectService   = Substitute.For<IProjectService>();
 
             _statusService = new ShellViewModel(windowManager, viewModelFactory, projectService);
         }
@@ -28,7 +27,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Services
 
             var vm = _statusService as IShellViewModel;
 
-            Assert.Equal("Issued Licenses: 10", vm.StatusMessage);
+            Assert.Equal("Issued Licenses: 10", vm?.StatusMessage);
         }
     }
 }

@@ -1,7 +1,6 @@
 using Castle.Windsor;
+using NSubstitute;
 using Rhino.Licensing.AdminTool.Startup;
-using Rhino.Mocks;
-using Rhino.Mocks.Interfaces;
 using Xunit;
 
 namespace Rhino.Licensing.AdminTool.Tests.Startup
@@ -15,9 +14,9 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         {
             _container = new WindsorContainer();
 
-            _guyWire = MockRepository.GenerateMock<GuyWire>(_container);
-            _guyWire.Expect(g => g.Container).Return(_container);
-            _guyWire.Expect(g => g.Wire()).CallOriginalMethod(OriginalCallOptions.CreateExpectation);
+            _guyWire = Substitute.ForPartsOf<GuyWire>(_container);
+            _guyWire.Container.Returns(_container);
+            _guyWire.Wire();
         }
 
         [Fact]
@@ -25,9 +24,10 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         {
             var installer = new FactoryRegistration();
 
-            _guyWire.Expect(g => g.ComponentsInfo).Return(new[] { installer });
+            _guyWire.ComponentsInfo.Returns(new[] { installer });
             
-            Assert.DoesNotThrow(() => _guyWire.Wire());
+            var ex = Record.Exception(() => _guyWire.Wire());
+            Assert.Null(ex);
         }
 
         [Fact]
@@ -35,9 +35,10 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         {
             var installer = new ServiceRegistration();
 
-            _guyWire.Expect(g => g.ComponentsInfo).Return(new[] { installer });
+            _guyWire.ComponentsInfo.Returns(new[] { installer });
 
-            Assert.DoesNotThrow(() => _guyWire.Wire());
+            var ex = Record.Exception(() => _guyWire.Wire());
+            Assert.Null(ex);
         }
 
         [Fact]
@@ -45,9 +46,10 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         {
             var installer = new ViewModelRegistration();
 
-            _guyWire.Expect(g => g.ComponentsInfo).Return(new[] { installer });
+            _guyWire.ComponentsInfo.Returns(new[] { installer });
 
-            Assert.DoesNotThrow(() => _guyWire.Wire());
+            var ex = Record.Exception(() => _guyWire.Wire());
+            Assert.Null(ex);
         }
 
         [Fact]
@@ -55,9 +57,10 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         {
             var installer = new ViewRegistration();
 
-            _guyWire.Expect(g => g.ComponentsInfo).Return(new[] { installer });
+            _guyWire.ComponentsInfo.Returns(new[] { installer });
 
-            Assert.DoesNotThrow(() => _guyWire.Wire());
+            var ex = Record.Exception(() => _guyWire.Wire());
+            Assert.Null(ex);
         }
     }
 }

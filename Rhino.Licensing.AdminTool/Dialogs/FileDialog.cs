@@ -25,7 +25,7 @@ namespace Rhino.Licensing.AdminTool.Dialogs
 
         public virtual T ViewModel
         {
-            get { return _viewModel; }
+            get => _viewModel;
             set
             {
                 _viewModel = value;

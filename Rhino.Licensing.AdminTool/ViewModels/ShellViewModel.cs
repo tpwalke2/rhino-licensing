@@ -82,7 +82,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string StatusMessage
         {
-            get { return _statusMessage; }
+            get => _statusMessage;
             set
             {
                 _statusMessage = value;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Caliburn.PresentationFramework.ApplicationModel;
 using Castle.MicroKernel;
@@ -6,10 +5,9 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Rhino.Licensing.AdminTool.Startup;
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
-using Rhino.Mocks.Interfaces;
 using Xunit;
 using System.Linq;
+using NSubstitute;
 
 namespace Rhino.Licensing.AdminTool.Tests.Startup
 {
@@ -27,7 +25,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         public void GuyWire_Registers_Correct_Components()
         {
             var guyWire = new GuyWire();
-            var count = guyWire.ComponentsInfo.Count();
+            var count   = guyWire.ComponentsInfo.Count();
 
             Assert.Equal(4, count);
         }
@@ -49,7 +47,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         public void GuyWire_Disposes_Container_Upon_Dewire()
         {
             var container = new WindsorContainer();
-            var guyWire = new GuyWireStub(container);
+            var guyWire   = new GuyWireStub(container);
 
             guyWire.Wire();
             guyWire.Dewire();
@@ -60,22 +58,22 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
         [Fact]
         public void Can_Show_Root_ViewModel()
         {
-            var winManager = MockRepository.GenerateMock<IWindowManager>();
-            var shell = MockRepository.GenerateMock<IShellViewModel>();
-            var container = new WindsorContainer();
-            var guyWire = new GuyWire(container);
+            var winManager = Substitute.For<IWindowManager>();
+            var shell      = Substitute.For<IShellViewModel>();
+            var container  = new WindsorContainer();
+            var guyWire    = new GuyWire(container);
 
             container.Kernel.AddComponentInstance<IWindowManager>(winManager);
             container.Kernel.AddComponentInstance<IShellViewModel>(shell);
 
             guyWire.ShowRootModel();
 
-            winManager.AssertWasCalled(x => x.Show(Arg.Is(shell), Arg.Is<object>(null)));
+            winManager.Received().Show(Arg.Is(shell), Arg.Is<object>(null));
         }
 
         public class GuyWireStub : GuyWire
         {
-            private IEnumerable<IRegistration> _components;
+            private readonly IEnumerable<IRegistration> _components;
 
             public GuyWireStub() : this(new WindsorContainer())
             {
@@ -83,13 +81,10 @@ namespace Rhino.Licensing.AdminTool.Tests.Startup
 
             public GuyWireStub(IWindsorContainer container) : base(container)
             {
-                _components = new[] { new StubRegistration(), new StubRegistration() };
+                _components = new[] {new StubRegistration(), new StubRegistration()};
             }
 
-            public override IEnumerable<IRegistration> ComponentsInfo
-            {
-                get { return _components; }
-            }
+            public override IEnumerable<IRegistration> ComponentsInfo => _components;
 
             public IEnumerable<IRegistration> GetComponents()
             {

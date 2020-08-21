@@ -13,7 +13,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public bool OverwritePrompt
         {
-            get { return _overwritePrompt; }
+            get => _overwritePrompt;
             set
             {
                 _overwritePrompt = value;
@@ -23,7 +23,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public bool SupportMultiDottedExtensions
         {
-            get { return _supportMultiDottedExtensions; }
+            get => _supportMultiDottedExtensions;
             set
             {
                 _supportMultiDottedExtensions = value;

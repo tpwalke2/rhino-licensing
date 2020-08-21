@@ -44,7 +44,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual Project CurrentProject
         {
-            get { return _project; }
+            get => _project;
             set
             {
                 _project = value;
@@ -55,7 +55,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual License SelectedLicense
         {
-            get { return _selectedLicense; }
+            get => _selectedLicense;
             set
             {
                 _selectedLicense = value;

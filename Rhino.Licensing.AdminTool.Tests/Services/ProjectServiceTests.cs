@@ -56,7 +56,7 @@ namespace Rhino.Licensing.AdminTool.Tests.Services
             var project = service.Open(fileInfo);
 
             Assert.NotNull(project);
-            Assert.Equal(1, project.Product.IssuedLicenses.Count);
+            Assert.Single(project.Product.IssuedLicenses);
             Assert.Equal("John Doe", project.Product.IssuedLicenses[0].OwnerName);
             Assert.Equal(expirationDate, project.Product.IssuedLicenses[0].ExpirationDate);
             Assert.Equal(LicenseType.Trial, project.Product.IssuedLicenses[0].LicenseType);

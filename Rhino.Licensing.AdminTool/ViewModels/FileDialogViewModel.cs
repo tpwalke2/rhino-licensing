@@ -18,7 +18,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual bool AddExtension
         {
-            get { return _addExtension; }
+            get => _addExtension;
             set
             {
                 _addExtension = value;
@@ -28,7 +28,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual bool CheckFileExists
         {
-            get { return _checkFileExists; }
+            get => _checkFileExists;
             set
             {
                 _checkFileExists = value;
@@ -38,7 +38,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual bool CheckPathExists
         {
-            get { return _checkPathExists; }
+            get => _checkPathExists;
             set
             {
                 _checkPathExists = value;
@@ -48,7 +48,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string DefaultExtension
         {
-            get { return _defaultExtension; }
+            get => _defaultExtension;
             set
             {
                 _defaultExtension = value;
@@ -58,7 +58,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string FileName
         {
-            get { return _fileName; }
+            get => _fileName;
             set
             {
                 _fileName = value;
@@ -68,7 +68,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual IEnumerable<string> FileNames
         {
-            get { return _fileNames; }
+            get => _fileNames;
             set
             {
                 _fileNames = value;
@@ -78,7 +78,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual bool? Result
         {
-            get { return _result; }
+            get => _result;
             set
             {
                 _result = value;
@@ -88,7 +88,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string Filter
         {
-            get { return _filter; }
+            get => _filter;
             set
             {
                 _filter = value;
@@ -98,7 +98,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string InitialDirectory
         {
-            get { return _initialDirectory; }
+            get => _initialDirectory;
             set
             {
                 _initialDirectory = value;
@@ -108,7 +108,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual string Title
         {
-            get { return _title; }
+            get => _title;
             set
             {
                 _title = value;

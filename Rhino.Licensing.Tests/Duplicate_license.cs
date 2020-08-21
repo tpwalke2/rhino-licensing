@@ -34,7 +34,7 @@ namespace Rhino.Licensing.Tests
 			validator2.AssertValidLicense();
 
 			Assert.True(wait.WaitOne(TimeSpan.FromSeconds(100)));
-			Assert.Equal(invalidation.Value, InvalidationType.TimeExpired);
+			if (invalidation != null) Assert.Equal(InvalidationType.TimeExpired, invalidation.Value);
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual License CurrentLicense
         {
-            get { return _currentLicense; }
+            get => _currentLicense;
             set
             {
                 _currentLicense = value;

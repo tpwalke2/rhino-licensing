@@ -39,8 +39,8 @@ namespace Rhino.Licensing.Tests
             var path = Path.GetTempFileName();
             File.WriteAllText(path, license);
 
-
-            Assert.DoesNotThrow(() => new LicenseValidator(public_only, path).AssertValidLicense());	
+            var ex = Record.Exception(() => new LicenseValidator(public_only, path).AssertValidLicense());
+            Assert.Null(ex);
         }
 
         [Fact]
@@ -49,18 +49,19 @@ namespace Rhino.Licensing.Tests
             var generator = new LicenseGenerator(public_and_private);
             var license = generator.Generate("ayende", new Guid("FFD0C62C-B953-403e-8457-E90F1085170D"),
                                              DateTime.UtcNow.AddDays(1),
-                                             new Dictionary<string, string> { { "version", "2.0" } }, LicenseType.Subscription);
+                                             new Dictionary<string, string> {{"version", "2.0"}},
+                                             LicenseType.Subscription);
 
 
             var path = Path.GetTempFileName();
             File.WriteAllText(path, license);
 
 
-            Assert.DoesNotThrow(() => new LicenseValidator(public_only, path)
-                                        {
-                                            SubscriptionLeaseProvider = new SubscriptionLeaseProvider("http://localhost/"+Guid.NewGuid())
-                                        }.AssertValidLicense());
-
+            var ex = Record.Exception(() => new LicenseValidator(public_only, path)
+            {
+                SubscriptionLeaseProvider = new SubscriptionLeaseProvider("http://localhost/" + Guid.NewGuid())
+            }.AssertValidLicense());
+            Assert.Null(ex);
         }
 
         [Fact]
@@ -101,12 +102,12 @@ namespace Rhino.Licensing.Tests
 
             host.Open();
 
-            Assert.DoesNotThrow(() => new LicenseValidator(public_only, path)
+            var ex = Record.Exception(() => new LicenseValidator(public_only, path)
             {
                 SubscriptionLeaseProvider = new SubscriptionLeaseProvider(address)
             }.AssertValidLicense());
-
-
+            Assert.Null(ex);
+            
             host.Close();
         }
 

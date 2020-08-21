@@ -6,9 +6,9 @@ using Rhino.Licensing.AdminTool.Model;
 using Rhino.Licensing.AdminTool.Services;
 using Rhino.Licensing.AdminTool.Tests.Base;
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
 using Xunit;
 using Caliburn.Testability.Extensions;
+using NSubstitute;
 using Rhino.Licensing.Contracts;
 
 namespace Rhino.Licensing.AdminTool.Tests.ViewModels
@@ -24,12 +24,12 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
 
         public ProjectViewModelTests()
         {
-            _dialogService = MockRepository.GenerateMock<IDialogService>();
-            _projectService = MockRepository.GenerateMock<IProjectService>();
-            _statusService = MockRepository.GenerateMock<IStatusService>();
-            _windowManager = MockRepository.GenerateMock<IWindowManager>();
-            _viewModelFactory = MockRepository.GenerateMock<IViewModelFactory>();
-            _exportService = MockRepository.GenerateMock<IExportService>();
+            _dialogService = Substitute.For<IDialogService>();
+            _projectService = Substitute.For<IProjectService>();
+            _statusService = Substitute.For<IStatusService>();
+            _windowManager = Substitute.For<IWindowManager>();
+            _viewModelFactory = Substitute.For<IViewModelFactory>();
+            _exportService = Substitute.For<IExportService>();
         }
 
         [Fact]
@@ -84,13 +84,12 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         public void Save_Action_Will_Open_SaveDialog()
         {
             var dialogModel = new SaveFileDialogViewModel {Result = true};
-            _dialogService.Expect(x => x.ShowSaveFileDialog(dialogModel));
-            _viewModelFactory.Expect(x => x.Create<ISaveFileDialogViewModel>()).Return(dialogModel);
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(dialogModel);
 
             var viewModel = CreateProjectViewModel();
             viewModel.Save();
 
-            _dialogService.AssertWasCalled(x => x.ShowSaveFileDialog(Arg.Is(dialogModel)), x => x.Repeat.Once());
+            _dialogService.Received().ShowSaveFileDialog(Arg.Is(dialogModel));
         }
 
         [Fact]
@@ -100,13 +99,13 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
             var choosenFile = new FileInfo(existingFile);
             var dialogViewModel = new SaveFileDialogViewModel {Result = true, FileName = existingFile};
 
-            _viewModelFactory.Expect(x => x.Create<ISaveFileDialogViewModel>()).Return(dialogViewModel);
-            _dialogService.Expect(x => x.ShowSaveFileDialog(dialogViewModel));
-
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(dialogViewModel);
+            
             var viewModel = CreateProjectViewModel();
             viewModel.Save();
 
-            _projectService.Expect(x => x.Save(Arg<Project>.Is.Anything, Arg.Is(choosenFile))).Repeat.Once();
+            _projectService.Received().Save(Arg.Any<Project>(), Arg.Is(choosenFile));
+            _dialogService.Received().ShowSaveFileDialog(dialogViewModel);
         }
 
         [Fact]
@@ -114,13 +113,13 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         {
             var dialogModel = new SaveFileDialogViewModel {Result = true, FileName = null};
 
-            _viewModelFactory.Expect(x => x.Create<ISaveFileDialogViewModel>()).Return(dialogModel);
-            _dialogService.Expect(x => x.ShowSaveFileDialog(dialogModel));
-
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(dialogModel);
+            
             var viewModel = CreateProjectViewModel();
             viewModel.Save();
             
-            _projectService.AssertWasNotCalled(x => x.Save(Arg<Project>.Is.Anything, Arg<FileInfo>.Is.Anything));
+            _projectService.DidNotReceive().Save(Arg.Any<Project>(), Arg.Any<FileInfo>());
+            _dialogService.Received().ShowSaveFileDialog(dialogModel);
         }
 
         [Fact]
@@ -140,7 +139,7 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         public void Default_Project_Save_Dialog_Has_Correct_Filter()
         {
             var dialogViewModel = new SaveFileDialogViewModel { Result = true };
-            _viewModelFactory.Expect(x => x.Create<ISaveFileDialogViewModel>()).Return(dialogViewModel);
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(dialogViewModel);
 
             var vm = CreateProjectViewModel();
             vm.Save();
@@ -152,7 +151,7 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         public void Default_Project_Open_Dialog_Has_Correct_Filter()
         {
             var dialogViewModel = new OpenFileDialogViewModel { Result = true };
-            _viewModelFactory.Expect(x => x.Create<IOpenFileDialogViewModel>()).Return(dialogViewModel);
+            _viewModelFactory.Create<IOpenFileDialogViewModel>().Returns(dialogViewModel);
 
             var vm = CreateProjectViewModel();
             vm.Open();
@@ -177,7 +176,7 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         public void Calling_Save_For_Second_Time_Wont_Show_SaveDialog()
         {
             var dialogModel = new SaveFileDialogViewModel {Result = true, FileName = "C:\\"};
-            _viewModelFactory.Expect(x => x.Create<ISaveFileDialogViewModel>()).Return(dialogModel);
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(dialogModel);
 
             var vm = CreateProjectViewModel();
             
@@ -185,26 +184,26 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
 
             vm.Save(); //For the second time overwrites the same file
 
-            _dialogService.AssertWasCalled(x => x.ShowSaveFileDialog(Arg.Is(dialogModel)), options => options.Repeat.Once());
+            _dialogService.Received().ShowSaveFileDialog(Arg.Is(dialogModel));
         }
 
         [Fact]
         public void Open_Shows_OpenDialog()
         {
             var dialogModel = new OpenFileDialogViewModel { Result = true, FileName = "C:\\" };
-            _viewModelFactory.Expect(x => x.Create<IOpenFileDialogViewModel>()).Return(dialogModel);
+            _viewModelFactory.Create<IOpenFileDialogViewModel>().Returns(dialogModel);
 
             var vm = CreateProjectViewModel();
             vm.Open();
 
-            _dialogService.AssertWasCalled(x => x.ShowOpenFileDialog(Arg.Is(dialogModel)), options => options.Repeat.Once());
+            _dialogService.Received().ShowOpenFileDialog(Arg.Is(dialogModel));
         }
 
         [Fact]
         public void Open_Returns_False_When_User_Cancels_The_Open_Dialog()
         {
             var dialogModel = new OpenFileDialogViewModel { Result = false, FileName = "C:\\" };
-            _viewModelFactory.Expect(x => x.Create<IOpenFileDialogViewModel>()).Return(dialogModel);
+            _viewModelFactory.Create<IOpenFileDialogViewModel>().Returns(dialogModel);
 
             var vm = CreateProjectViewModel();
             var opened = vm.Open();
@@ -216,10 +215,10 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
         public void Open_Loads_Project()
         {
             var p = new Project();
-            _projectService.Expect(x => x.Open(Arg<FileInfo>.Is.Anything)).Return(p);
+            _projectService.Open(Arg.Any<FileInfo>()).Returns(p);
 
             var dialogModel = new OpenFileDialogViewModel { Result = true, FileName = "C:\\" };
-            _viewModelFactory.Expect(x => x.Create<IOpenFileDialogViewModel>()).Return(dialogModel);
+            _viewModelFactory.Create<IOpenFileDialogViewModel>().Returns(dialogModel);
 
             var vm = CreateProjectViewModel();
             vm.Open();
@@ -245,13 +244,13 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
             var vm = CreateProjectViewModel();
             var issueVm = new IssueLicenseViewModel(new UserDataViewModel(), new LicenseInfoViewModel());
 
-            _viewModelFactory.Expect(f => f.Create<IssueLicenseViewModel>()).Return(issueVm);
-            _windowManager.Expect(w => w.ShowDialog(Arg.Is(issueVm), Arg<object>.Is.Null)).Return(true);
+            _viewModelFactory.Create<IssueLicenseViewModel>().Returns(issueVm);
+            _windowManager.ShowDialog(Arg.Is(issueVm), Arg.Any<object>()).Returns(true);
 
             vm.CurrentProject = new Project { Product = new Product() };
             vm.AddLicense();
 
-            Assert.Equal(1, vm.CurrentProject.Product.IssuedLicenses.Count);
+            Assert.Single(vm.CurrentProject.Product.IssuedLicenses);
         }
 
         [Fact]
@@ -281,11 +280,11 @@ namespace Rhino.Licensing.AdminTool.Tests.ViewModels
             vm.CurrentProject = new Project {Product = new Product()};
             vm.SelectedLicense = new License { OwnerName = "John Doe", ExpirationDate = null, LicenseType = LicenseType.Trial };
 
-            _viewModelFactory.Expect(f => f.Create<ISaveFileDialogViewModel>()).Return(saveDialog);
+            _viewModelFactory.Create<ISaveFileDialogViewModel>().Returns(saveDialog);
 
             vm.ExportLicense();
 
-            _exportService.AssertWasCalled(x => x.Export(Arg.Is(vm.CurrentProject.Product), Arg.Is(vm.SelectedLicense), Arg<FileInfo>.Is.NotNull));
+            _exportService.Received().Export(Arg.Is(vm.CurrentProject.Product), Arg.Is(vm.SelectedLicense), Arg.Any<FileInfo>());
         }
 
         private ProjectViewModel CreateProjectViewModel()

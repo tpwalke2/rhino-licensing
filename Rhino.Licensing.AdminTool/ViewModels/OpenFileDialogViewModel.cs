@@ -11,7 +11,7 @@ namespace Rhino.Licensing.AdminTool.ViewModels
 
         public virtual bool MultiSelect
         {
-            get { return _multiSelect; }
+            get => _multiSelect;
             set
             {
                 _multiSelect = value;

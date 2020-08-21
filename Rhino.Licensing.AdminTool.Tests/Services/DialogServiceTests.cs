@@ -1,7 +1,7 @@
+using NSubstitute;
 using Rhino.Licensing.AdminTool.Factories;
 using Rhino.Licensing.AdminTool.Services;
 using Rhino.Licensing.AdminTool.ViewModels;
-using Rhino.Mocks;
 using Xunit;
 using OpenFileDialog = Rhino.Licensing.AdminTool.Dialogs.OpenFileDialog;
 using SaveFileDialog = Rhino.Licensing.AdminTool.Dialogs.SaveFileDialog;
@@ -14,31 +14,31 @@ namespace Rhino.Licensing.AdminTool.Tests.Services
         public void Can_Show_OpenFileDialog()
         {
             var model = CreateOpenFileDialogModel(true);
-            var factory = MockRepository.GenerateMock<IDialogFactory>();
-            var dialog = MockRepository.GenerateMock<OpenFileDialog>();
+            var factory = Substitute.For<IDialogFactory>();
+            var dialog = Substitute.For<OpenFileDialog>();
 
-            factory.Expect(x => x.Create<OpenFileDialog, IOpenFileDialogViewModel>(Arg.Is(model))).Return(dialog);
-            dialog.Expect(x => x.ViewModel).Return(model);
+            factory.Create<OpenFileDialog, IOpenFileDialogViewModel>(model).Returns(dialog);
+            dialog.ViewModel.Returns(model);
 
             new DialogService(factory).ShowOpenFileDialog(model);
 
-            dialog.AssertWasCalled(x => x.ShowDialog(), x => x.Repeat.Once());
+            dialog.Received(1).ShowDialog();
         }
 
         [Fact]
         public void Can_Show_SaveFileDialog()
         {
-            var model = CreateSaveFileDialogModel(true);
-            var factory = MockRepository.GenerateMock<IDialogFactory>();
-            var dialog = MockRepository.GenerateMock<SaveFileDialog>();
+            var model   = CreateSaveFileDialogModel(true);
+            var factory = Substitute.For<IDialogFactory>();
+            var dialog  = Substitute.For<SaveFileDialog>();
 
             var service = new DialogService(factory) as IDialogService;
 
-            factory.Expect(x => x.Create<SaveFileDialog, ISaveFileDialogViewModel>(Arg.Is(model))).Return(dialog);
+            factory.Create<SaveFileDialog, ISaveFileDialogViewModel>(model).Returns(dialog);
 
             service.ShowSaveFileDialog(model);
 
-            dialog.AssertWasCalled(x => x.ShowDialog(), x => x.Repeat.Once());
+            dialog.Received(1).ShowDialog();
         }
 
         private IOpenFileDialogViewModel CreateOpenFileDialogModel(bool? result)

@@ -24,7 +24,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual Guid ID
         {
-            get { return _id; }
+            get => _id;
             set
             {
                 _id = value;
@@ -35,7 +35,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual string OwnerName
         {
-            get { return _ownerName; }
+            get => _ownerName;
             set
             {
                 _ownerName = value;
@@ -46,7 +46,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual DateTime? ExpirationDate
         {
-            get { return _expirationDate; }
+            get => _expirationDate;
             set
             {
                 _expirationDate = value;
@@ -57,7 +57,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual LicenseType LicenseType
         {
-            get { return _licenseType; }
+            get => _licenseType;
             set
             {
                 _licenseType = value;
@@ -68,7 +68,7 @@ namespace Rhino.Licensing.AdminTool.Model
         [DataMember]
         public virtual ObservableCollection<UserData> Data
         {
-            get { return _data; }
+            get => _data;
             private set
             {
                 _data = value;

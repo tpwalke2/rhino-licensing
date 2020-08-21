@@ -28,10 +28,7 @@ namespace Rhino.Licensing
         /// </summary>
         protected override string License
         {
-            get
-            {
-                return inMemoryLicense ?? File.ReadAllText(licensePath);
-            }
+            get => inMemoryLicense ?? File.ReadAllText(licensePath);
             set
             {
                 try

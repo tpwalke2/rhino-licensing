@@ -13,10 +13,7 @@ namespace Rhino.Licensing.AdminTool.Dialogs
             _dialog = new SaveDialog();
         }
 
-        protected override FileDialog Dialog
-        {
-            get { return _dialog; }
-        }
+        protected override FileDialog Dialog => _dialog;
 
         protected override void BindDialogToViewModel()
         {
