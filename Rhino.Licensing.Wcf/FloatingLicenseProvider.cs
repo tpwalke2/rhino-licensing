@@ -1,7 +1,7 @@
 using System;
 using System.ServiceModel;
-using log4net;
 using Rhino.Licensing.Contracts;
+using Serilog;
 
 namespace Rhino.Licensing.Wcf
 {
@@ -13,11 +13,6 @@ namespace Rhino.Licensing.Wcf
         private readonly string licenseServerUrl;
         private readonly Guid clientId;
         
-        /// <summary>
-        /// License validator logger
-        /// </summary>
-        private static readonly ILog Log = LogManager.GetLogger(typeof(FloatingLicenseProvider));
-
         /// <summary>
         /// Creates a floating license provider that connects to the specified WCF service.
         /// </summary>
@@ -44,7 +39,7 @@ namespace Rhino.Licensing.Wcf
         {
             if (licenseServerUrl == null)
             {
-                Log.Warn("Could not find license server url");
+                Log.Warning("Could not find license server url");
                 throw new InvalidOperationException("Floating license encountered, but licenseServerUrl was not set");
             }
             
@@ -62,7 +57,7 @@ namespace Rhino.Licensing.Wcf
 
                 if (floatingLicense != null) return floatingLicense;
                 
-                Log.WarnFormat("Null response from license server: {0}", licenseServerUrl);
+                Log.Warning("Null response from license server: {0}", licenseServerUrl);
                 throw new FloatingLicenseNotAvailableException();
             }
             finally

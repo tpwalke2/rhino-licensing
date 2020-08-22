@@ -14,10 +14,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <ProjectReference Include="..\Rhino.Licensing.Contracts\Rhino.Licensing.Contracts.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Rhino.Licensing.Contracts\Rhino.Licensing.Contracts.csproj" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Linq;
-using log4net;
+using Serilog;
 
 namespace Rhino.Licensing.Discovery
 {
@@ -17,7 +17,6 @@ namespace Rhino.Licensing.Discovery
 		private readonly byte[] buffer = new byte[1024*4];
 		private const string AllHostsMulticastIP = "224.0.0.1";
 		private const int DiscoveryPort = 12391;
-        private static readonly ILog Log = LogManager.GetLogger(typeof(DiscoveryHost));
 
 		///<summary>
 		/// Starts listening to network notifications
@@ -57,7 +56,7 @@ namespace Rhino.Licensing.Discovery
 	        }
 	        catch (SocketException ex)
 	        {
-                Log.Warn($"Setting socket options failed for address: {address?.Address}", ex);
+                Log.Warning($"Setting socket options failed for address: {address?.Address}", ex);
 	        }
 	    }
 
@@ -90,32 +89,34 @@ namespace Rhino.Licensing.Discovery
 				try
 				{
 					using (var stream = new MemoryStream(socketAsyncEventArgs.Buffer, 0, socketAsyncEventArgs.BytesTransferred))
-					using (var streamReader = new StreamReader(stream))
-					{
-						var senderId = streamReader.ReadLine();
-						var userId = streamReader.ReadLine();
-						var clientDiscovered = new ClientDiscoveredEventArgs
+						using (var streamReader = new StreamReader(stream))
 						{
-							MachineName = streamReader.ReadLine(),
-							UserName = streamReader.ReadLine()
-						};
+							var senderId = streamReader.ReadLine();
+							var userId   = streamReader.ReadLine();
+							var clientDiscovered = new ClientDiscoveredEventArgs
+							{
+								MachineName = streamReader.ReadLine(),
+								UserName    = streamReader.ReadLine()
+							};
 
-						Guid result;
-						if (Guid.TryParse(userId, out result))
-						{
-							clientDiscovered.UserId = result;
-						}
+							Guid result;
+							if (Guid.TryParse(userId, out result))
+							{
+								clientDiscovered.UserId = result;
+							}
 
-						if (Guid.TryParse(senderId, out result))
-						{
-							clientDiscovered.SenderId = result;
-							InvokeClientDiscovered(clientDiscovered);
+							if (Guid.TryParse(senderId, out result))
+							{
+								clientDiscovered.SenderId = result;
+								InvokeClientDiscovered(clientDiscovered);
+							}
 						}
-					}
 				}
 				catch
 				{
+					// ignored
 				}
+
 				StartListening();
 			}
 		}
@@ -128,7 +129,7 @@ namespace Rhino.Licensing.Discovery
 		private void InvokeClientDiscovered(ClientDiscoveredEventArgs e)
 		{
 			EventHandler<ClientDiscoveredEventArgs> handler = ClientDiscovered;
-			if (handler != null) handler(this, e);
+			handler?.Invoke(this, e);
 		}
 
 		/// <summary>
@@ -162,9 +163,8 @@ namespace Rhino.Licensing.Discovery
         /// Disposes of the object
         /// </summary>
 		public void Dispose()
-		{
-			if (socket != null)
-				socket.Dispose();
-		}
+        {
+	        socket?.Dispose();
+        }
 	}
 }
