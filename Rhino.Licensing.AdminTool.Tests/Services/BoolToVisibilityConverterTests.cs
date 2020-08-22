@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Windows;
 using Rhino.Licensing.AdminTool.ValueConverters;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Rhino.Licensing.AdminTool.Tests.Services
 {

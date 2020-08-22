@@ -126,10 +126,7 @@ namespace Rhino.Licensing
 			var theState = (State)state;
 			try
 			{
-				if (theState.Socket != null)
-				{
-					theState.Socket.Close();
-				}
+				theState.Socket?.Close();
 			}
 			catch (Exception)
 			{
@@ -196,13 +193,13 @@ namespace Rhino.Licensing
 				Failure = failure;
 			}
 
-			public UdpClient Socket { get; private set; }
+			public UdpClient Socket { get; }
 
-			public Action<DateTime> GetTime { get; private set; }
+			public Action<DateTime> GetTime { get; }
 
-			public Action Failure { get; private set; }
+			public Action Failure { get; }
 
-			public IPEndPoint EndPoint { get; private set; }
+			public IPEndPoint EndPoint { get; }
 		}
 
 		#endregion

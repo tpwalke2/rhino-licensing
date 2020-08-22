@@ -2,7 +2,6 @@ using Rhino.Licensing.AdminTool.ViewModels;
 using Xunit;
 using System.Linq;
 using NSubstitute;
-using Xunit.Extensions;
 using DialogForm = System.Windows.Forms.FileDialog;
 using OpenFileDialog = Rhino.Licensing.AdminTool.Dialogs.OpenFileDialog;
 
